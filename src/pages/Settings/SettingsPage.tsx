@@ -1,14 +1,8 @@
-import DebugTab from "./Tabs/Debug";
-import LanguagesTab from "./Tabs/Languages";
-import StylesTab from "./Tabs/Styles";
+import DebugTab from "./Tabs/DebugTab";
+import LanguagesTab from "./Tabs/LanguagesTab";
+import StylesTab from "./Tabs/StylesTab";
 
-function TabInput({
-  label,
-  defaultChecked = false
-}: {
-  label: string;
-  defaultChecked?: boolean;
-}) {
+function TabInput({ label, defaultChecked = false }: { label: string; defaultChecked?: boolean }) {
   const tabClass = "tab mx-px";
   return (
     <input
@@ -22,11 +16,11 @@ function TabInput({
   );
 }
 
-export default function Settings() {
-  const tabContentClass = "tab-content bg-base-100 border-base-300";
+export default function SettingsPage() {
+  const tabContentClass = "tab-content border-base-300 bg-base-100";
 
   return (
-    <div role="tablist" className="tabs tabs-bordered">
+    <div role="tablist" className="tabs tabs-border h-screen">
       <TabInput label={"Styles"} defaultChecked />
       <div role="tabpanel" className={tabContentClass}>
         <StylesTab />
