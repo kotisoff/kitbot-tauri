@@ -1,10 +1,17 @@
 import clsx from "clsx";
 import { useSettingsContext } from "../../../context/SettingsProvider";
+import { emit } from "@tauri-apps/api/event";
 
 const themes = ["dark", "dim", "coffee", "night", "dracula", "black", "wireframe", "light", "cupcake"];
 
 export default function StylesTab() {
   const { setTheme, theme: currentTheme } = useSettingsContext();
+
+  function set_theme(theme: string) {
+    console.log("меняем тему ахуеть!");
+    emit("theme-changed", { theme });
+    setTheme(theme);
+  }
 
   return (
     <>
@@ -24,9 +31,7 @@ export default function StylesTab() {
                 "hover:bg-base-300 p-2 rounded-md cursor-pointer font-sans select-none border-2 transition-colors",
                 currentTheme == theme ? "border-accent" : "border-secondary border-opacity-30"
               )}
-              onClick={() => {
-                setTheme(theme);
-              }}
+              onClick={() => set_theme(theme)}
             >
               <div className="grid grid-cols-2">
                 <div className={clsx("font-bold", currentTheme === theme && "text-accent")}>{theme}</div>

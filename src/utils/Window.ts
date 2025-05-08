@@ -10,12 +10,19 @@ async function findWindow(label: string) {
   return (await getAllWebviewWindows()).find((w) => w.label == label);
 }
 
-export async function createWindow(label: string, options?: WindowOptions) {
+function format_window_name(title: string) {
+  return `${title} - KitBot App`;
+}
+
+export async function useWindow(label: string, options?: WindowOptions) {
   let window = await findWindow(label);
   if (!window) {
-    await invoke("create_window", { label, url: options?.url ?? "index.html" });
+    await invoke("create_window", {
+      label,
+      url: options?.url ?? "index.html",
+      title: format_window_name(options?.title ?? label)
+    });
     window = (await findWindow(label)) as WebviewWindow;
-    window.setTitle(`${options?.title ?? label} - KitBot App`);
   }
 
   window.unminimize();

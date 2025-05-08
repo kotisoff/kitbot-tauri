@@ -7,8 +7,9 @@ use run_bot::run_bot;
 use tray::settings_hide_on_close;
 
 #[tauri::command]
-async fn create_window(app: tauri::AppHandle, label: String, url: String) {
+async fn create_window(app: tauri::AppHandle, label: String, title: String, url: String) {
   tauri::WebviewWindowBuilder::new(&app, label, tauri::WebviewUrl::App(url.as_str().into()))
+    .title(title)
     .build()
     .unwrap();
 }

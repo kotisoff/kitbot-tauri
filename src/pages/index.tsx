@@ -2,9 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import InstanceComponent, { Instance } from "../components/Instance";
 import { invoke } from "@tauri-apps/api/core";
 import { normalizeFilename } from "../utils/FilenameUtils";
-import { createWindow } from "../utils/Window";
-import { useLocation } from "react-router-dom";
-import clsx from "clsx";
+import { useWindow } from "../utils/Window";
 
 type Instances = {
   instances: Instance[];
@@ -23,34 +21,16 @@ class BarElement {
   }
 
   on_click() {
-    createWindow(normalizeFilename(this.label), {
+    useWindow(normalizeFilename(this.label), {
       title: this.title,
-      url: window.location.origin + this.path
+      url: this.path
     });
   }
 
   toElement() {
-    const location = useLocation();
-
-    // const linkClass = "w-auto h-10 tooltip tooltip-bottom";
-    // const selectedClass = "text-primary shadow-primary shadow-md";
-    // const unselectedClass = "shadow-base-300 shadow-lg";
-    // const defaultClass = "w-max h-10 bg-base-200 hover:text-primary transition-all";
-
     return (
-      <li>
-        <a /*className={linkClass}*/ data-tip={this.title} onClick={() => this.on_click()} key={"bar_" + this.label}>
-          <div
-            className={
-              clsx()
-              // "btn text-center"
-              // defaultClass,
-              // location.pathname === this.path ? selectedClass : unselectedClass
-            }
-          >
-            {this.title}
-          </div>
-        </a>
+      <li className="w-auto" data-tip={this.title} onClick={() => this.on_click()} key={"bar_" + this.label}>
+        <a>{this.title}</a>
       </li>
     );
   }
@@ -58,8 +38,9 @@ class BarElement {
 
 export default function MainPage() {
   const topPages: BarElement[] = [
-    new BarElement("Add", "/add", "Add"),
-    new BarElement("Settings", "/settings", "Settings")
+    new BarElement("add_instance", "/add", "Add Instance"),
+    new BarElement("settings", "/settings", "Settings"),
+    new BarElement("test", "/test", "Test Playground")
   ];
 
   const [instances, setInstances] = useState<ReactNode[]>();
@@ -67,27 +48,27 @@ export default function MainPage() {
   useEffect(() => {
     (async () => {
       const i = await invoke<Instances>("fetch_instances");
-      setInstances(i.instances.map((v, i) => <InstanceComponent instanceData={v} key={v.name + i} />));
+
+      setInstances(i.instances.map((v, i) => <InstanceComponent instanceData={{ ...v, id: i }} key={v.name + i} />));
     })();
   }, []);
 
   return (
-    <div className="flex flex-col min-w-screen min-h-screen overflow-hidden">
-      <div className="navbar bg-base-200/30 border-b w-full">
-        <div className="navbar-start">
-          <ul className="menu menu-horizontal px-2 py-0 gap-3">{topPages.map((page) => page.toElement())}</ul>
-        </div>
+    <div className="flex bg-base-200 flex-col min-w-screen min-h-screen overflow-hidden">
+      {/* Navbar */}
+      <div className="navbar bg-base-100 w-full">
+        <ul className="menu menu-horizontal px-2 py-0 gap-3">{topPages.map((page) => page.toElement())}</ul>
         <div className="navbar-end">
           <div className="btn btn-ghost w-10 h-10 p-2" onClick={() => window.location.reload()} />
         </div>
       </div>
-
+      {/* Content */}
       <div
-        className="grid gap-3 p-3 overflow-y-auto"
-        style={{
-          maxHeight: "85vh",
-          gridTemplateColumns: "repeat(auto-fill, minmax(10rem, 1fr))"
-        }}
+        className="flex flex-row flex-wrap gap-2 p-3 scroll-m-0 overflow-y-auto"
+        // style={{
+        //   maxHeight: "85vh",
+        //   gridTemplateColumns: "repeat(auto-fill, minmax(10rem, 1fr))"
+        // }}
       >
         {instances ? instances : <div className="loading loading-ball loading-lg fixed left-1/2 bottom-1/2" />}
       </div>

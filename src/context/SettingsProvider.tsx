@@ -1,3 +1,4 @@
+import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import { createContext, useState, useEffect, useContext, ReactNode } from "react";
 
@@ -30,6 +31,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("hideOnClose", hideOnClose.toString());
     invoke("settings_hide_on_close", { state: hideOnClose });
   }, [theme, hideOnClose]);
+
+  useEffect(() => {
+    console.log("допустим мяу");
+    event.listen<{ theme: string }>("theme-changed", (event) => {
+      console.log("Тему поменяли, ахуеть!");
+      setTheme(event.payload.theme);
+    });
+  }, []);
 
   return (
     <SettingsContext.Provider value={{ theme, setTheme, hideOnClose, setHideOnClose }}>

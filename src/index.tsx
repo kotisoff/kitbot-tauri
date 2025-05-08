@@ -5,6 +5,8 @@ import MainPage from "./pages/index";
 import "./assets/index.css";
 import { SettingsProvider } from "./context/SettingsProvider";
 import SettingsPage from "./pages/Settings/SettingsPage";
+import Test from "./pages/test";
+import InstancePage from "./pages/Instance/InstancePage";
 
 function ErrorElement() {
   return (
@@ -19,13 +21,25 @@ function ErrorElement() {
 const Router = createBrowserRouter([
   {
     path: "/",
-    element: <MainPage />,
-    errorElement: <ErrorElement />
-  },
-  {
-    path: "/settings",
-    element: <SettingsPage />,
-    errorElement: <ErrorElement />
+    errorElement: <ErrorElement />,
+    children: [
+      {
+        index: true,
+        element: <MainPage />
+      },
+      {
+        path: "/settings",
+        element: <SettingsPage />
+      },
+      {
+        path: "/test",
+        element: <Test />
+      },
+      {
+        path: "/instance",
+        element: <InstancePage />
+      }
+    ]
   }
 ]);
 
